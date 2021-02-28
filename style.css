@@ -25,12 +25,7 @@ menu {
     text-align: center;
     font-size: 24px;
 }
-.content {
-    padding: 16px;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    
-}
+
 .menu-content-left {
     text-align: left;
     font-size: 16px;
@@ -48,6 +43,7 @@ menu {
     font-size: 18px;
     border: none;
     border-radius: 50%;
+    border: 0.5px solid #30363d;
 }
 .btn-menu:hover {
     background-color:#323842;
@@ -55,4 +51,20 @@ menu {
 .btn-menu:focus {
     border: none;
     outline: none;
+}
+.content {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+
+}
+.content .li{
+    padding: 6px;
+    padding-left: 12px;
+    border-bottom: 1px solid #30363d;
+}
+.content .li:hover {
+    background-color:#323842;
+} 
+.content .li:last-child{
+    border-bottom: none;
 }

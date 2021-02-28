@@ -1,8 +1,6 @@
-body {
+.body-color {
     background-color:#0d1117;
     color: rgba(240, 246, 252, 0.7);
-    
-    
 }
 
 .container {
@@ -17,7 +15,7 @@ menu {
     padding: 16px;
     font-size: 14px;
     line-height: 1.5;
-    background-color: #161b22;
+    background-color: #262729;
     position: sticky;
     top: 0;
 }

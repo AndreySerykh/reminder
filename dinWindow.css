@@ -1,0 +1,24 @@
+.d-win{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color:#0d1117;
+}
+.d-win-body{
+    color: rgba(240, 246, 252, 0.7);
+    height: 100%
+}
+.d-win-container{
+    box-sizing: border-box;
+    min-height: 100%;
+    padding-bottom: 70px;
+}
+.d-win-footer{
+    height:60px;
+    width:100%;
+    background-color: black;
+    margin-top: -60px;
+    
+}

@@ -38,3 +38,24 @@ const newItem = new RemItem({
 })
 
 newItem.create()
+
+
+class Window {
+    constructor(optioins){
+        this.body = options.body
+        this.footer = options.footer
+    }
+
+    create(){
+        const dinWin = `
+        <div class="din-win">
+            <div class="din-win-body">
+                ${this.body}
+            </div>
+            <div class="din-win-footer">
+                ${this.footer}
+            </div>
+        </div>`
+        document.body.appendChild(dinWin)
+    }
+}

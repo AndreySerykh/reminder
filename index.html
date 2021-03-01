@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Reminder</title>
     <link rel="stylesheet" type="text/css" href="/style.css">
     <link rel="stylesheet" type="text/css" href="/dinWindow.css">
 </head>
@@ -16,7 +16,7 @@
         <menu>
             <div class="menu-content-left " style="visibility: visible;">Напоминания</div>
             <div class="menu-content-right">
-                <button class="btn-menu">+</button>
+                <button class="btn-menu btn">+</button>
             </div>
         </menu>
         <div class="content" id="rem_store">
@@ -35,9 +35,16 @@
     <div class="d-win">
         <div class="container d-win-body">
             <div class="d-win-container">
-                <a>djns;kdjn;ja snd</a>   
+                <input class="input-text" type="text" placeholder="Название">
+                <div class="check-item">
+                    <input class="" type="checkbox" checked>
+                    <input class="" type="text" placeholder="Добавить список">
+                </div>   
             </div>
-            <div class="d-win-footer"></div>
+            <div class="d-win-footer" style="vertical-align: bottom;">
+                <button class="btn-footer btn">Отмена</button>
+                <button class="btn-footer btn">Сохранить</button>
+            </div>
         </div>
     </div>
 </body>

@@ -11,11 +11,12 @@ header {
     padding: 32px;
 }
 menu {
-    /*z-index: 32;*/
+    /*z-index: 32;
+    opacity: 0.7;*/
     padding: 16px;
     font-size: 14px;
     line-height: 1.5;
-    background-color: #262729;
+    background-color: #161b22;
     position: sticky;
     top: 0;
 }
@@ -44,7 +45,7 @@ menu {
     border: 0.5px solid #30363d;
 }
 .btn-menu:hover {
-    background-color:#323842;
+    background-color:#30363d;
 } 
 .btn-menu:focus {
     border: none;
@@ -61,7 +62,7 @@ menu {
     border-bottom: 1px solid #30363d;
 }
 .content .li:hover {
-    background-color:#323842;
+    background-color:#30363d;
 } 
 .content .li:last-child{
     border-bottom: none;

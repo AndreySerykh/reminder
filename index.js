@@ -12,32 +12,41 @@ class Item {
 
 }
 
-class RemItem extends Item{
+class ReminderItem extends Item{
     constructor(options) {
         super(options)
 
         this.$remStore = document.querySelector(options.remStore)
+        
+        this.$li = document.createElement('li')
+        this.$li.className = 'li'
+        this.$li.id = this.id
+        this.$li.innerText = this.name
+
+        //this.$remStore.appendChild(this.$li)
+    }
+    addLast(){
+        this.$remStore.appendChild(this.$li) 
     }
 
-    create(){
-        const li = document.createElement('li')
-        li.className = 'li'
-        li.id = this.id
-        li.innerText = this.name
+    addFirst(){
+        this.$remStore.insertBefore(this.$li, this.$remStore.firstChild) 
+    }
 
-        this.$remStore.appendChild(li)
+    delete(){
+        this.$remStore.removeChild(this.$li)
     }
 
 }
 
-const newItem = new RemItem({
+const newItem = new ReminderItem({
     id: 'li_item1',
-    name: 'First item',
+    name: 'First item 12',
     list: {},
     remStore: '#rem_store'
-})
+}).addFirst()
 
-newItem.create()
+
 
 
 class Window {

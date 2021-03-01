@@ -20,5 +20,47 @@
     width:100%;
     background-color: black;
     margin-top: -60px;
-    
+    text-align: center;
+}
+.btn-footer{
+    background-color: black;
+    color: rgba(240, 246, 252, 0.7);
+    font-size: 16px;
+    min-width: 200px;
+    height: 35px;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    margin: 15px;
+}
+.btn-footer:hover{
+    /*background-color: #30363d; */
+    color: wheat;
+    border: 1px solid wheat;
+}
+.btn:focus{      
+    border: 1px solid wheat;
+    outline: none;
+}
+.btn-footer:focus-within{
+   /* border: 1px solid #388bfd;*/
+}
+.input-text{
+    background-color:#0d1117;
+    color: rgba(240, 246, 252, 0.7);
+    border: none;
+    border-bottom:1px solid rgba(240, 246, 252, 0.7);
+    font-size: 24px;
+    /*padding-left: 15px;
+    padding-right: 15px;*/
+    margin-top: 15px;
+    width: 540px
+}
+.input-text:focus{
+    color: wheat;
+    outline: none;
+    /*border: none;*/
+    border-bottom:1px solid wheat;
+}
+.check-item{
+    display: inline-block;
 }

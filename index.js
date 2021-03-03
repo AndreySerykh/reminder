@@ -26,18 +26,19 @@ class ReminderItem extends Item{
         //this.$remStore.appendChild(this.$li)
     }
     addLast(){
-        this.$remStore.appendChild(this.$li) 
+        this.$remStore.append(this.$li) 
     }
 
     addFirst(){
-        this.$remStore.insertBefore(this.$li, this.$remStore.firstChild) 
+        this.$remStore.prepend(this.$li) 
     }
 
-    delete(){
-        this.$remStore.removeChild(this.$li)
+    remove(){
+        this.$li.remove()
     }
 
 }
+
 
 const newItem = new ReminderItem({
     id: 'li_item1',
@@ -48,23 +49,64 @@ const newItem = new ReminderItem({
 
 
 
-
 class Window {
-    constructor(optioins){
+    constructor(options){
         this.body = options.body
-        this.footer = options.footer
+        this.footer = options.footer  
+        this.$dWin =  document.createElement('div')
+        this.$dWin.className = 'd-win'     
+        this.content =`
+        <div class="container d-win-body">
+            <div class="d-win-container">
+                ${options.body}
+            </div>
+            <div class="d-win-footer" style="vertical-align: bottom;">
+                ${options.footer}   
+            </div>
+        </div>`
     }
 
     create(){
-        const dinWin = `
-        <div class="din-win">
-            <div class="din-win-body">
-                ${this.body}
-            </div>
-            <div class="din-win-footer">
-                ${this.footer}
-            </div>
-        </div>`
-        document.body.appendChild(dinWin)
+        this.$dWin.insertAdjacentHTML('beforeend', this.content)
+        document.body.append(this.$dWin)
     }
+
+    remove(){
+        this.$dWin.remove()
+        this.$dWin.innerHTML = ''
+    }
+
+
 }
+const addRemWin = new Window({
+    body: `<input class="input-text" type="text" placeholder="Название">
+            <div class="check-item">
+                <input class="" type="checkbox" checked>
+                <input class="" type="text" placeholder="Добавить список">
+            </div> `,
+    footer: `<button class="btn-footer btn" id="d-win-close" onclick="console.log('close ', this)">Отмена</button>
+            <button class="btn-footer btn">Сохранить</button>`
+})
+
+document.querySelector('#add-reminder').addEventListener('click', ()=>{
+    console.log('click add-reminder')
+    addRemWin.create()
+})
+
+for (const fbody of document.querySelectorAll('body')) {
+    fbody.addEventListener('click', e => {
+      if (!e.target.matches('#d-win-close')) return; 
+      console.log('click close din-win') 
+      addRemWin.remove()
+    }); 
+  }
+  /*
+addRemWin.addEventListener('#d-win-close', ()=>{
+    console.log('click close din-win')
+    addRemWin.remove()
+})
+
+document.querySelector('#save-reminder').addEventListener('click', ()=>{
+    console.log('click save-reminder')
+    //addRemWin.create()
+})*/

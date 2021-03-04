@@ -1,4 +1,4 @@
-.d-win{
+.m-win{
     position: absolute;
     top: 0;
     left: 0;
@@ -7,17 +7,17 @@
     background-color:#1a212b;
     z-index: 99;
 }
-.d-win-body{
+.m-win-body{
     color: rgba(240, 246, 252, 0.7);
     height: 100%;
     background-color:#0d1117;
 }
-.d-win-container{
+.m-win-container{
     box-sizing: border-box;
     min-height: 100%;
     padding-bottom: 70px;
 }
-.d-win-footer{
+.m-win-footer{
     height:60px;
     width:100%;
     background-color: black;
@@ -46,10 +46,12 @@
 .btn-footer:focus-within{
    /* border: 1px solid #388bfd;*/
 }
-.input-text{
+.input{
     background-color:#0d1117;
     color: rgba(240, 246, 252, 0.7);
     border: none;
+}
+.input-text-header{
     border-bottom:1px solid rgba(240, 246, 252, 0.7);
     font-size: 24px;
     /*padding-left: 15px;
@@ -64,6 +66,33 @@
     /*border: none;*/
     border-bottom:1px solid wheat;
 }
-.check-item{
+.reminder-items{
+    display: grid;
+    padding: 5px;
+    font-size: 18px;
+    overflow: hidden;
+}
+.reminder-item{
     display: inline-block;
+    margin: 7px;
+}
+.img-min{
+    width: 18px;
+    height: 18x;
+}
+
+.imput-text-min{
+    font-size: 18px;
+}
+.imput-text-min:hover{
+    border: none;
+    outline: none;
+    /*border: none;*/
+    border-bottom:1px solid wheat;
+   
+}
+.input:focus{
+    outline: none;
+    border: none;
+    border-bottom:1px solid wheat;
 }

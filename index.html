@@ -5,8 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reminder</title>
-    <link rel="stylesheet" type="text/css" href="/style.css">
-    <link rel="stylesheet" type="text/css" href="/dinWindow.css">
+    <link rel="stylesheet" type="text/css" href="/style-flex.css">
+    <!--link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="/dinWindow.css"-->
 </head>
 <body class="body-color">
     <div class="container">
@@ -33,28 +34,24 @@
     </div>
 
     <div class="m-win">
-        <div class="container m-win-body">
+        <div class="m-win-body">
             <div class="m-win-container">
-            <input class="input input-text-header" type="text" placeholder="Название">
-            <div class="reminder-items">
-                <div class="reminder-item" id="head-reminder-item">
-                    <img class="img-min" src="img/check.png">
-                    <span>Добавить список</span>
+                <input class="input input-text-header" type="text" placeholder="Название">
+                <div class="reminder-items">
+                    <div class="reminder-item" id="head-reminder-item">
+                        <img class="img-min" src="img/check.png">
+                        <span>Добавить список</span>
+                    </div>
+                    <div class="reminder-item" id="footer-reminder-item" style="display: none;">
+                        <img class="img-min" src="img/arrow_1.png">
+                        <span>Добавить элемент</span>
+                    </div>
                 </div>
-                <!--div class="reminder-item">
-                    <input class="" type="checkbox">
-                    <input class="input imput-text-min" type="text" placeholder="Добавить список">
-                </div-->
-                <div class="reminder-item" id="footer-reminder-item" style="display: none;">
-                    <img class="img-min" src="img/arrow_1.png">
-                    <span>Добавить элемент</span>
-                </div>
-          </div>
-        </div>
+            </div>
             <div class="m-win-footer" style="vertical-align: bottom;">
                 <button class="btn-footer btn" id="m-win-close" onclick="console.log('close ', this)">Отмена</button>
-          <button class="btn-footer btn" id="save-new-reminder">Сохранить</button>
-        </div>
+                <button class="btn-footer btn" id="save-new-reminder">Сохранить</button>
+            </div>
         </div>
     </div>
     

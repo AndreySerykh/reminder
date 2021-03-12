@@ -15,7 +15,8 @@
 .m-win-container{
     box-sizing: border-box;
     min-height: 100%;
-    padding-bottom: 70px;
+    max-height: 100%;
+    padding-bottom: 60px;
 }
 .m-win-footer{
     height:60px;
@@ -67,14 +68,17 @@
     border-bottom:1px solid wheat;
 }
 .reminder-items{
-    display: grid;
     padding: 5px;
     font-size: 18px;
-    overflow: hidden;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 .reminder-item{
     display: inline-block;
     margin: 7px;
+    width: 100%;
+    
 }
 .img-min{
     width: 18px;

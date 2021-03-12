@@ -172,14 +172,14 @@ document.body.on("click", "#save-new-reminder", () => {
   console.log(`click in btn save`);
 });
 
-document.body.on('click', '#head-reminder-item', () => {
+document.body.on('click', '#head-reminder-item span', () => {
   console.log(`head-reminder-item`);
   document.querySelector('#footer-reminder-item').style.display = 'block';
   document.querySelector('#head-reminder-item').style.display = 'none';
   addReminerItem();
 });
 
-document.body.on('click', '#footer-reminder-item', () => {
+document.body.on('click', '#footer-reminder-item span', () => {
   addReminerItem();
 });
 //-----------

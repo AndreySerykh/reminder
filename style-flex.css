@@ -102,23 +102,28 @@ menu {
     flex-direction: column;
     justify-content: space-between;
 
+    width: 450px;
     color: rgba(240, 246, 252, 0.7);
     background-color:#0d1117; 
 }
 
 .m-win-container{
-    /*box-sizing: border-box;
-    
-    padding-bottom: 60px;
     display: flex;
     flex-direction: column;
-    display: flex;*/
-    min-height: 100%;
-    max-height: 100%;
+    flex-basis: 100%;
+
+    max-height: 92.5%;
 }
 .m-win-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+
     background-color: black;
-    text-align: center;
+    /*text-align: center;*/
+    height: 70px;
+
 
 }
 .btn-footer{
@@ -129,7 +134,7 @@ menu {
     height: 35px;
     border: 1px solid #30363d;
     border-radius: 10px;
-    margin: 15px;
+    /*margin: 15px;*/
 }
 .btn-footer:hover{
     /*background-color: #30363d; */
@@ -166,29 +171,35 @@ menu {
 .reminder-items{
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    /*align-items: stretch;*/
+    justify-content: flex-start;
 
     padding: 5px;
     font-size: 18px;
-    height: 100%;
-    overflow-y: scroll;
+    /*height: 100%;*/
+    overflow-y: auto;
     overflow-x: hidden;
 }
-.reminder-item{
-    display: inline-block;
+.reminder-item, .add-reminder-item{
+    display: inline-flex;
     margin: 7px;
     width: 100%;
     
 }
 .img-min{
     width: 18px;
-    height: 18x;
+    height: 18px;
+    padding-right: 5px;
+}
+.checkbox-item{
+    margin-right: 8px;
 }
 
-.imput-text-min{
+.item-text-reminder{
     font-size: 18px;
+    width: 100%;
 }
-.imput-text-min:hover{
+.item-text-reminder:hover{
     border: none;
     outline: none;
     /*border: none;*/

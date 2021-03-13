@@ -11,7 +11,7 @@ body {
     position: relative;  
     box-sizing: border-box;
     min-height: 100vh;
-    width: 540px;
+    width: 450px;
     margin: auto;
     background-color:#0d1117;
     color: rgba(240, 246, 252, 0.7);
@@ -69,15 +69,15 @@ menu {
     border-radius: 6px;
 
 }
-.content .li{
+.content .li-item{
     padding: 6px;
     padding-left: 12px;
     border-bottom: 1px solid #30363d;
 }
-.content .li:hover {
+.content .li-item:hover {
     background-color:#30363d;
 } 
-.content .li:last-child{
+.content .li-item:last-child{
     border-bottom: none;
 }
 

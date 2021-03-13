@@ -1,6 +1,8 @@
+import {ModalWin} from './modalWindow.js'
+import './localStorage.js'
+
 //load from local storedg saved rem_item
 //... not relised
-
 class Item {
   constructor(options) {
     this.id = options.id;
@@ -22,7 +24,7 @@ class ReminderItem extends Item {
     this.$remStore = document.querySelector(options.remStore);
 
     this.$li = document.createElement("li");
-    this.$li.className = "li";
+    this.$li.className = options.className;
     this.$li.id = this.id;
     this.$li.innerText = this.name;
   }
@@ -39,12 +41,18 @@ class ReminderItem extends Item {
   }
 }
 
-const newItem = new ReminderItem({
-  id: "li_item1",
-  name: "First item 12",
-  list: {},
-  remStore: "#rem_store",
-}).addFirst();
+const reminderItems = localStorage.get()
+if (reminderItems){
+  reminderItems.forEach((item, i) => {
+    new ReminderItem({
+      remStore: "#rem-store",
+      id: `li-item${i}`,
+      name: item.name,
+      className: 'li-item',
+      list: item.items
+    }).addFirst();
+  });
+}
 
 
 // Описываем обработчик событий к еще не созданным элементам
@@ -62,51 +70,52 @@ document.body.on = function (event, element, callback) {
 
 
 //----------modal window -----------------///
-class ModalWin {
+/*class ModalWin {
   constructor(options) {
     this.body = `<div class="container m-win-body">  
                   ${options.body} 
                 </div>`;
-    this.$dWin = document.createElement("div");
-    this.$dWin.className = "m-win";
+    this.$mWin = document.createElement("div");
+    this.$mWin.className = "m-win";
   }
 
   create() {
-    this.$dWin.insertAdjacentHTML("beforeend", this.body);
-    document.body.append(this.$dWin);
+    this.$mWin.insertAdjacentHTML("beforeend", this.body);
+    document.body.append(this.$mWin);
   }
 
   remove() {
-    this.$dWin.remove();
-    this.$dWin.innerHTML = "";
+    this.$mWin.remove();
+    this.$mWin.innerHTML = "";
   }
 
   insertHTML(selector, position, html) {
     document.querySelector(selector).insertAdjacentHTML(position, html);
   }
-}
+}*/
 const addRemWin = new ModalWin({
-  body:       `<div class="m-win">
-                <div class="m-win-body">
-                    <div class="m-win-container">
-                        <input class="input input-text-header" id="reminder-name" type="text" placeholder="Название">
-                        <div class="reminder-items">
-                            <div class="reminder-item" id="head-reminder-item">
-                                <img class="img-min" src="img/check.png">
-                                <span>Добавить список</span>
-                            </div>
-                            <div class="reminder-item" id="footer-reminder-item" style="display: none;">
-                                <img class="img-min" src="img/arrow_1.png">
-                                <span>Добавить элемент</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="m-win-footer" style="vertical-align: bottom;">
-                        <button class="btn-footer btn" id="m-win-close" onclick="console.log('close ', this)">Отмена</button>
-                        <button class="btn-footer btn" id="save-new-reminder">Сохранить</button>
-                    </div>
-                </div>
-              </div>`
+  body:
+    `<div class="m-win">
+      <div class="m-win-body">
+          <div class="m-win-container">
+              <input class="input input-text-header" id="reminder-name" type="text" placeholder="Название">
+              <div class="reminder-items">
+                  <div class="reminder-item" id="head-reminder-item">
+                      <img class="img-min" src="img/check.png">
+                      <span>Добавить список</span>
+                  </div>
+                  <div class="reminder-item" id="footer-reminder-item" style="display: none;">
+                      <img class="img-min" src="img/arrow_1.png">
+                      <span>Добавить элемент</span>
+                  </div>
+              </div>
+          </div>
+          <div class="m-win-footer" style="vertical-align: bottom;">
+              <button class="btn-footer btn" id="m-win-close" onclick="console.log('close ', this)">Отмена</button>
+              <button class="btn-footer btn" id="save-new-reminder">Сохранить</button>
+          </div>
+      </div>
+    </div>`
 });
 
 document.querySelector("#add-reminder").addEventListener("click", () => {
@@ -183,6 +192,7 @@ function setFocusLastItem() {
 
 
 //------------- Local storage----------------//
+/*
 Storage.prototype.set = (value) => {
   const key = "reminderStorege";
   let data;
@@ -202,5 +212,5 @@ Storage.prototype.get = () => {
   if (item) return JSON.parse(items);
   else return false;
 };
-
+*/
 ///------------------------------------------------

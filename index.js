@@ -1,22 +1,21 @@
 import {ModalWin} from './modalWindow.js'
 import './localStorage.js'
 
-//load from local storedg saved rem_item
-//... not relised
+
+//// нужно перенести в оьътдельный модуль/файл class Item, class ReminderItem
 class Item {
   constructor(options) {
     this.id = options.id;
     this.name = options.name;
-    this.list = options.list;
+    /*this.list = options.list;
     if (options.list.length)
       for (let key in options.list) {
         if (options.list.hasOwnProperty(key)) this[key] = options.list[key];
       }
-
+*/
     console.log("create item " + options);
   }
 }
-
 class ReminderItem extends Item {
   constructor(options) {
     super(options);
@@ -27,7 +26,41 @@ class ReminderItem extends Item {
     this.$li.className = options.className;
     this.$li.id = this.id;
     this.$li.innerText = this.name;
+    this.$li.data = options.dataId;
+
+    this.$li.onclick = () => {
+
+      modalWin.create({
+        windowName: "view",
+        body: createReminderWindowContent('view', reminderItems[this.$li.data])
+      })
+    }
+
+
+    this.mousePressTime = 0
+    this.$li.addEventListener('mousedown', function(e){
+      console.log('li mouse down');
+
+      this.interval = window.setInterval(()=>{
+        console.log('+500ms');
+        this.mousePressTime += 500
+      },500)
+    })
+
+    this.$li.addEventListener('mouseup', function(e){
+      console.log('li mouse up');
+
+      clearInterval(this.interval)
+      if (this.mousePressTime >= 1500)
+        console.log(`this is long click ${this.mousePressTime}`);
+      else
+        console.log(`this is fast click ${this.mousePressTime}`);
+      
+        this.mousePressTime = 0 
+    })
+
   }
+
   addLast() {
     this.$remStore.append(this.$li);
   }
@@ -41,102 +74,71 @@ class ReminderItem extends Item {
   }
 }
 
+
+
+const modalWin = new ModalWin(); //initial modal window 
+
 const reminderItems = localStorage.get()
 if (reminderItems){
   reminderItems.forEach((item, i) => {
     new ReminderItem({
       remStore: "#rem-store",
-      id: `li-item${i}`,
+      id: `li-item-${i}`,
       name: item.name,
       className: 'li-item',
-      list: item.items
+      dataId: i
     }).addFirst();
   });
 }
 
 
-// Описываем обработчик событий к еще не созданным элементам
+
+
+/*
+*   Общий обработчик событий к еще не созданным элементам
+*/
 document.body.on = function (event, element, callback) {
   for (const _body of document.querySelectorAll("body")) {
     _body.addEventListener(event, (e) => {
-      console.log("Object.prototype.on");
       if (!e.target.matches(element)) return;
       console.log(`Object.prototype.on -> ${element} -> ${event}`);
       callback();
     });
   }
 };
-//-------------------------------------------
 
 
-//----------modal window -----------------///
-/*class ModalWin {
-  constructor(options) {
-    this.body = `<div class="container m-win-body">  
-                  ${options.body} 
-                </div>`;
-    this.$mWin = document.createElement("div");
-    this.$mWin.className = "m-win";
-  }
-
-  create() {
-    this.$mWin.insertAdjacentHTML("beforeend", this.body);
-    document.body.append(this.$mWin);
-  }
-
-  remove() {
-    this.$mWin.remove();
-    this.$mWin.innerHTML = "";
-  }
-
-  insertHTML(selector, position, html) {
-    document.querySelector(selector).insertAdjacentHTML(position, html);
-  }
-}*/
-const addRemWin = new ModalWin({
-  body:
-    `<div class="m-win">
-      <div class="m-win-body">
-          <div class="m-win-container">
-              <input class="input input-text-header" id="reminder-name" type="text" placeholder="Название">
-              <div class="reminder-items">
-                  <div class="reminder-item" id="head-reminder-item">
-                      <img class="img-min" src="img/check.png">
-                      <span>Добавить список</span>
-                  </div>
-                  <div class="reminder-item" id="footer-reminder-item" style="display: none;">
-                      <img class="img-min" src="img/arrow_1.png">
-                      <span>Добавить элемент</span>
-                  </div>
-              </div>
-          </div>
-          <div class="m-win-footer" style="vertical-align: bottom;">
-              <button class="btn-footer btn" id="m-win-close" onclick="console.log('close ', this)">Отмена</button>
-              <button class="btn-footer btn" id="save-new-reminder">Сохранить</button>
-          </div>
-      </div>
-    </div>`
-});
-
+/*
+* Add new reminder
+*/
 document.querySelector("#add-reminder").addEventListener("click", () => {
   console.log("click add-reminder");
-  addRemWin.create();
+  modalWin.create({
+    windowName: "add",
+    body: createReminderWindowContent('add')
+  })
 });
 
 function addReminerItem() {
   const html = `<div class="add-reminder-item">
-      <input class="checkbox-item" type="checkbox">
-      <input class="input item-text-reminder" type="text" placeholder="Добавить список">
-    </div>`;
-  addRemWin.insertHTML("#footer-reminder-item", "beforebegin", html);
+                  <input class="checkbox-item" type="checkbox">
+                  <input class="input item-text-reminder" type="text" placeholder="Добавить список">
+                </div>`;
+
+  document
+    .querySelector("#footer-reminder-item")
+    .insertAdjacentHTML("beforebegin", html);
 }
 
 
+/*
+* Добавляем обработчик событий к еще не созданным элементам
+*/
 
-// Добавляем обработчик событий к еще не созданным элементам
+// общее закрытие модальных окон
 document.body.on("click", "#m-win-close", () => {
-  console.log("click btn close din-win");
-  addRemWin.remove();
+  console.log("click btn close modal-win");
+  modalWin.closeAll()
 });
 
 document.body.on("click", "#save-new-reminder", () => {
@@ -158,6 +160,97 @@ document.body.on("click", "#footer-reminder-item span", () => {
 });
 //-----------
 
+/*
+*   create reminder window with type = "add" || "edit" || "view"
+*/
+function createReminderWindowContent(type, options) {
+  let header = "",
+    content = "",
+    footer = "";
+  let name = options ? options.name : "";
+  let reminderList = options ? loadReminderList(type, options) : "";
+  if (type === "add" || type === "edit") {
+    header = `
+            <div class="m-win-header">
+            </div>`;
+    content = `
+            <div class="m-win-content">
+                <input class="input input-text-header" id="reminder-name" value="${name}" type="text" placeholder="Введите название">
+                <div class="reminder-items">
+                    <div class="reminder-item" id="head-reminder-item">
+                        <img class="img-min" src="img/check.png">
+                        <span>Добавить список</span>
+                    </div>
+                    ${reminderList}
+                    <div class="reminder-item" id="footer-reminder-item" style="display: none;">
+                        <img class="img-min" src="img/arrow_1.png">
+                        <span>Добавить элемент</span>
+                    </div>
+                </div>
+            </div>`;
+    footer = `
+            <div class="m-win-footer" style="vertical-align: bottom;">
+                <button class="btn btn-footer" id="m-win-close">Отмена</button>
+                <button class="btn btn-footer" id="save-new-reminder">Сохранить</button>
+            </div>`;
+  } else {
+    header = `
+            <div class="m-win-header">
+                <button class="btn btn-header" id="m-win-close"><</button>
+            </div>`;
+    content = `<div class="m-win-content">
+                    <input class="input input-text-header input-view" id="reminder-name" value="${name}" type="text" readonly >
+                    <div class="reminder-items">
+                        ${reminderList}
+                    </div>
+                </div>`;
+    footer = `<div class="m-win-footer" style="vertical-align: bottom;">
+                    <button class="btn btn-footer" id="finished-reminder">Завершить</button>
+                    <button class="btn btn-footer" id="edit-reminder">Изменить</button>
+                    <button class="btn btn-footer" id="delete-reminder">Удалить</button>
+                </div>`;
+  }
+
+  return header + content + footer;
+}
+
+function loadReminderList(type, options) {
+  /*    options = {
+   **        name: "some name string",
+   **        items: [
+   **            {
+   **                checked: true/false,
+   **                value: "some value string"
+   **            }
+   **        ]
+   **    }
+   */
+
+  let readonly = "",
+    placeholder = "Добавить список",
+    inputView = "";
+  if (type === "view") {
+    readonly = "readonly";
+    placeholder = "";
+    inputView = "input-view-item";
+  }
+
+  let html = "";
+  options.items.forEach((item, i) => {
+    const checked = item.checked ? "checked" : "";
+    const inputChecked = item.checked ? "input-checked" : "";
+    html += `<div class="add-reminder-item">
+                <input class="checkbox-item" type="checkbox" ${checked}>
+                <input class="input item-text-reminder ${inputView} ${inputChecked}" ${readonly} value="${item.value}" type="text"  ${placeholder}>
+            </div>`;
+  });
+
+  return html;
+}
+
+/*
+* save remindser in local storage
+*/
 function saveReminderItems() {
   console.log(`click in btn save inner`);
   const reminder = {
@@ -190,27 +283,3 @@ function setFocusLastItem() {
 }
 //----------------------------------------------
 
-
-//------------- Local storage----------------//
-/*
-Storage.prototype.set = (value) => {
-  const key = "reminderStorege";
-  let data;
-  let item = localStorage.getItem(key);
-  if (item) {
-    let parseItem = JSON.parse(item);
-    parseItem.push(value);
-    data = JSON.stringify(parseItem);
-  } else {
-    data = JSON.stringify([value]);
-  }
-  localStorage.setItem(key, data);
-};
-
-Storage.prototype.get = () => {
-  let items = localStorage.getItem("reminderStorege");
-  if (item) return JSON.parse(items);
-  else return false;
-};
-*/
-///------------------------------------------------

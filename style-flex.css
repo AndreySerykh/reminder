@@ -11,6 +11,7 @@ body {
     position: relative;  
     box-sizing: border-box;
     min-height: 100vh;
+    height: 1px;
     width: 450px;
     margin: auto;
     background-color:#0d1117;
@@ -24,38 +25,34 @@ header {
     font-size: 24px;
 }
 
-menu {
-    /*z-index: 32;
-    opacity: 0.7;*/
+.menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
     padding: 16px;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 16px;
     background-color: #161b22;
-    position: sticky;
-    top: 0;
 }
 
 .menu-content-left {
-    text-align: left;
-    font-size: 16px;
-    display: inline-block;
+    cursor: default;
 }
 .menu-content-right {
-    font-size: 16px;
-    display: inline-block;
-    text-align: right;
-    float: right;
+/**/
 }
 .btn-menu{
-    background-color:#161b22;
-    color: rgba(240, 246, 252, 0.7);
-    font-size: 18px;
+    background-color:#161b22!important;
+    /*color: rgba(240, 246, 252, 0.7);*/
     border: none;
-    border-radius: 50%;
-    border: 0.5px solid #30363d;
+    height: 35px!important;
+    width: 35px!important;
+    border-radius: 50%!important;
+    border: 0.5px solid #30363d!important;
 }
 .btn-menu:hover {
-    background-color:#30363d;
+    background-color:#30363d!important;
 } 
 .btn-menu:focus {
     border: none;
@@ -100,44 +97,32 @@ menu {
 .m-win-body{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 
+    /*justify-content: space-between;
     width: 450px;
     color: rgba(240, 246, 252, 0.7);
-    background-color:#0d1117; 
+    background-color:#0d1117; */
 }
-
-.m-win-container{
+.m-win-header{
     display: flex;
-    flex-direction: column;
-    flex-basis: 100%;
-
-    max-height: 92.5%;
-}
-.m-win-footer{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
+    /*flex-direction: row;
+    justify-content: left;*/
     align-items: center;
 
+    min-height: 70px;
     background-color: black;
-    /*text-align: center;*/
-    height: 70px;
-
-
+    padding-left: 15px;
 }
-.btn-footer{
+.btn {
     background-color: black;
     color: rgba(240, 246, 252, 0.7);
     font-size: 16px;
-    min-width: 200px;
     height: 35px;
     border: 1px solid #30363d;
     border-radius: 10px;
-    /*margin: 15px;*/
+    cursor:pointer;
 }
-.btn-footer:hover{
-    /*background-color: #30363d; */
+.btn:hover{
     color: wheat;
     border: 1px solid wheat;
 }
@@ -145,9 +130,35 @@ menu {
     border: 1px solid wheat;
     outline: none;
 }
-.btn-footer:focus-within{
-   /* border: 1px solid #388bfd;*/
+
+.btn-header{
+    min-width: 35px!important;
+    /*height: 35px!important;*/
 }
+
+.m-win-content{
+    display: flex;
+    flex-direction: column;
+
+    height: 85%;
+}
+
+.m-win-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+
+    background-color: black;
+    min-height: 70px;
+
+
+}
+.btn-footer{
+    min-width: 130px;
+}
+
+
 .input{
     background-color:#0d1117;
     color: rgba(240, 246, 252, 0.7);
@@ -167,6 +178,9 @@ menu {
     outline: none;
     /*border: none;*/
     border-bottom:1px solid wheat;
+}
+.input-view{
+    cursor: default;
 }
 .reminder-items{
     display: flex;
@@ -193,6 +207,7 @@ menu {
 }
 .checkbox-item{
     margin-right: 8px;
+    cursor: pointer;
 }
 
 .item-text-reminder{
@@ -206,6 +221,17 @@ menu {
     border-bottom:1px solid wheat;
    
 }
+.input-view-item, .input-view-item:hover, .input-view-item:focus{
+    cursor: default;
+    outline: none!important;
+    border-bottom: none!important;
+}
+
+.input-checked{
+    text-decoration-line: line-through;
+    text-decoration-color: gray;
+}
+
 .input:focus{
     outline: none;
     border: none;

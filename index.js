@@ -1,102 +1,198 @@
-import {ModalWin} from './modalWindow.js'
-import './localStorage.js'
-
+import { ModalWin } from "./modalWindow.js";
+import "./localStorage.js";
 
 //// нужно перенести в оьътдельный модуль/файл class Item, class ReminderItem
-class Item {
-  constructor(options) {
-    this.id = options.id;
-    this.name = options.name;
-    /*this.list = options.list;
-    if (options.list.length)
-      for (let key in options.list) {
-        if (options.list.hasOwnProperty(key)) this[key] = options.list[key];
-      }
-*/
-    console.log("create item " + options);
+class Element {
+  createInput(options) {
+    this.$check = document.createElement("input");
+    this.$check.setAttribute("type", "checkbox");
+    this.$check.setAttribute("readonly", "readonly");
+    this.$check.className = "checkbox-item block-invisible";
+    this.$check.id = `checkbox-item-${options.id}`;
+    return this.$check;
+  }
+
+  createText(options) {
+    this.$text = document.createElement("span");
+    this.$text.innerText = options.text;
+    this.$text.data = options.id; //  Attr
+    return this.$text;
   }
 }
-class ReminderItem extends Item {
+
+class ReminderItem extends Element {
   constructor(options) {
-    super(options);
+    super();
+    this.$reminderList = document.querySelector(options.reminderList);
 
-    this.$remStore = document.querySelector(options.remStore);
+    this.$item = document.createElement("div");
+    this.$item.className = "li-item";
+    this.$item.id = `li-item-${options.id}`;
+    this.$item.data = options.id; //  Attr
+    this.$item.insertAdjacentElement("beforeend", this.createInput(options));
+    this.$item.insertAdjacentElement("beforeend", this.createText(options));
 
-    this.$li = document.createElement("li");
-    this.$li.className = options.className;
-    this.$li.id = this.id;
-    this.$li.innerText = this.name;
-    this.$li.data = options.dataId;
-
-    this.$li.onclick = () => {
-
-      modalWin.create({
-        windowName: "view",
-        body: createReminderWindowContent('view', reminderItems[this.$li.data])
-      })
-    }
-
-
-    this.mousePressTime = 0
-    this.$li.addEventListener('mousedown', function(e){
-      console.log('li mouse down');
-
-      this.interval = window.setInterval(()=>{
-        console.log('+500ms');
-        this.mousePressTime += 500
-      },500)
-    })
-
-    this.$li.addEventListener('mouseup', function(e){
-      console.log('li mouse up');
-
-      clearInterval(this.interval)
-      if (this.mousePressTime >= 1500)
-        console.log(`this is long click ${this.mousePressTime}`);
-      else
-        console.log(`this is fast click ${this.mousePressTime}`);
-      
-        this.mousePressTime = 0 
-    })
-
+    this.eventSpy();
   }
 
   addLast() {
-    this.$remStore.append(this.$li);
+    this.$reminderList.append(this.$item);
   }
 
   addFirst() {
-    this.$remStore.prepend(this.$li);
+    this.$reminderList.prepend(this.$item);
   }
 
   remove() {
-    this.$li.remove();
+    this.$item.remove();
+  }
+
+  eventSpy() {
+    //this.checkModeState = false;
+    //this.mousePressTime = 0;
+
+    this.$item.addEventListener("mousedown", function (e) {
+      if (e.which == 1) {
+        console.log("li left mouse down");
+        e.preventDefault();
+
+        this.mousePressTime = 0;
+        this.interval = window.setInterval(() => {
+          console.log("+500ms");
+          this.mousePressTime += 500;
+
+          if (this.mousePressTime >= 1000) {
+            console.log("auto run long click!! CheckMode true");
+            clearInterval(this.interval);
+            if (!ReminderItem.checkModeState){
+              ReminderItem.checkModeState = true;
+              //this.displayAllCheckbox(true);
+              this.checkMode(true);
+            }
+            this.checkCheckbox(e.target);
+          }
+        }, 500);
+      }
+    }.bind(this));
+
+    this.$item.addEventListener("mouseup", function (e) {
+      if (e.which == 1) {
+        console.log("li left mouse up");
+        e.preventDefault();
+
+        clearInterval(this.interval);
+        if (this.mousePressTime < 1000) {
+          console.log(`this is fast click ${this.mousePressTime}`);
+          if (!ReminderItem.checkModeState) {
+            modalWin.create({
+              windowName: "view",
+              body: createReminderWindowContent(
+                "view",
+                reminderItems[e.target.data]
+              ),
+            });
+          }
+          else {
+            this.checkCheckbox(e.target);
+          }
+        }/* else {
+          console.log(`this is long click ${this.mousePressTime}`);
+          if (!this.checkModeState) {
+            this.displayAllCheckbox(true);
+            this.checkCheckbox(e.target);
+            this.checkMode();
+          }
+        }*/
+        this.mousePressTime = 0;
+      }
+    }.bind(this));
+
+    document.querySelector('#item-check-all').addEventListener("click", function (e) {
+      e.currentTarget.checked
+        ? this.checkAllCheckbox(true)
+        : this.checkAllCheckbox(false)
+
+      this.countChecked()
+    }.bind(this))
+
+    document.querySelector('#cancel-check-mode').addEventListener("click", function (e) {
+      this.checkAllCheckbox(false)
+      this.checkMode(false)
+    }.bind(this))
+  
+///не помогло!
+    document.querySelectorAll(".checkbox-item").forEach((element) => {
+      element.addEventListener("click",  (e) => {
+        e.preventDefault();
+      })
+    })  
+  }
+  displayAllCheckbox(show) {
+    let allCheckbox = document.querySelectorAll(".checkbox-item");
+    if (allCheckbox.length)
+      allCheckbox.forEach((element) => {
+        show
+          ? element.classList.remove("block-invisible")
+          : element.classList.add("block-invisible");
+      
+          //element.classList.toggle("block-invisible");
+      });
+  }
+  
+  static checkModeState = false;
+
+  checkAllCheckbox(state) {
+    let allCheckbox = document.querySelectorAll(".checkbox-item");
+    if (allCheckbox.length)
+      allCheckbox.forEach((element) => {
+        state
+          ? element.setAttribute("checked", "checked")
+          : element.removeAttribute("checked")
+      });
+  }
+
+  checkCheckbox(item) {
+    ///Bug not fixset
+    if (item.childNodes.length)
+      item.querySelector("input").toggleAttribute("checked");
+
+    this.countChecked()
+  }
+
+  checkMode(state) {
+    this.displayAllCheckbox(state);
+    ReminderItem.checkModeState = state
+    document.querySelector("#main-footer").classList.toggle("block-invisible");
+
+    let qq = document.querySelector(".menu-content").childNodes;
+    qq.forEach((element) => {
+      if (element.nodeName !== "#text")
+        element.classList.toggle("block-invisible");
+    });
+  }
+
+  countChecked(){
+    const count = document.querySelectorAll(".checkbox-item:checked").length
+    document.querySelector('#count-checked').innerText = count
   }
 }
 
+const modalWin = new ModalWin(); //initial modal window
 
-
-const modalWin = new ModalWin(); //initial modal window 
-
-const reminderItems = localStorage.get()
-if (reminderItems){
+const reminderItems = localStorage.get(); // load old save reminder from local storage
+if (reminderItems) {
   reminderItems.forEach((item, i) => {
     new ReminderItem({
-      remStore: "#rem-store",
-      id: `li-item-${i}`,
-      name: item.name,
-      className: 'li-item',
-      dataId: i
+      reminderList: "#rem-store",
+      id: i,
+      text: item.name,
     }).addFirst();
   });
 }
 
-
-
-
 /*
-*   Общий обработчик событий к еще не созданным элементам
-*/
+ *   Общий обработчик событий к еще не созданным элементам
+ */
 document.body.on = function (event, element, callback) {
   for (const _body of document.querySelectorAll("body")) {
     _body.addEventListener(event, (e) => {
@@ -107,16 +203,15 @@ document.body.on = function (event, element, callback) {
   }
 };
 
-
 /*
-* Add new reminder
-*/
+ * Add new reminder
+ */
 document.querySelector("#add-reminder").addEventListener("click", () => {
   console.log("click add-reminder");
   modalWin.create({
     windowName: "add",
-    body: createReminderWindowContent('add')
-  })
+    body: createReminderWindowContent("add"),
+  });
 });
 
 function addReminerItem() {
@@ -130,15 +225,14 @@ function addReminerItem() {
     .insertAdjacentHTML("beforebegin", html);
 }
 
-
 /*
-* Добавляем обработчик событий к еще не созданным элементам
-*/
+ * Добавляем обработчик событий к еще не созданным элементам
+ */
 
 // общее закрытие модальных окон
 document.body.on("click", "#m-win-close", () => {
   console.log("click btn close modal-win");
-  modalWin.closeAll()
+  modalWin.closeAll();
 });
 
 document.body.on("click", "#save-new-reminder", () => {
@@ -161,8 +255,8 @@ document.body.on("click", "#footer-reminder-item span", () => {
 //-----------
 
 /*
-*   create reminder window with type = "add" || "edit" || "view"
-*/
+ *   create reminder window with type = "add" || "edit" || "view"
+ */
 function createReminderWindowContent(type, options) {
   let header = "",
     content = "",
@@ -204,7 +298,7 @@ function createReminderWindowContent(type, options) {
                         ${reminderList}
                     </div>
                 </div>`;
-    footer = `<div class="m-win-footer" style="vertical-align: bottom;">
+    footer = `<div class="m-win-footer">
                     <button class="btn btn-footer" id="finished-reminder">Завершить</button>
                     <button class="btn btn-footer" id="edit-reminder">Изменить</button>
                     <button class="btn btn-footer" id="delete-reminder">Удалить</button>
@@ -249,8 +343,8 @@ function loadReminderList(type, options) {
 }
 
 /*
-* save remindser in local storage
-*/
+ * save remindser in local storage
+ */
 function saveReminderItems() {
   console.log(`click in btn save inner`);
   const reminder = {
@@ -274,7 +368,7 @@ function saveReminderItems() {
   }
 
   localStorage.set(reminder); //save new reminder in local storage
-  addRemWin.remove(); //close mWindow
+  modalWin.close("add"); //close mWindow
 }
 
 function setFocusLastItem() {
@@ -282,4 +376,3 @@ function setFocusLastItem() {
   nodeList[nodeList.length - 1].select();
 }
 //----------------------------------------------
-

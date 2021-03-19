@@ -7,19 +7,26 @@
     <title>Reminder</title>
     <link rel="stylesheet" type="text/css" href="/style-flex.css">
 </head>
-<body class="body-color">
-    <div class="container container-width">
-        <header class="text-header">
-            Напоминания
-        </header>
-        <menu class="menu">
-            <div class="menu-content-left " style="visibility: visible;">Напоминания</div>
+<body>
+    <div class="container main-container">
+        <div class="menu-content">
+            <div class="menu-content-left">Напоминания</div>
+            <div class="menu-check-mode block-invisible">
+                <input type="checkbox" id="item-check-all"><a>&nbsp;Все&nbsp;</a>&nbsp;<a>Выбрано <span id="count-checked"></span> стр.</a>
+            </div>
             <div class="menu-content-right">
                 <button class="btn btn-menu" id="add-reminder" hint="ADD">+</button>
                 <button class="btn btn-menu" id="options-reminder" hint="ADD">&equiv;</button>
             </div>
-        </menu>
-        <div class="content" id="rem-store">
+        </div>
+        <div class="content">
+            <div class="rem-store" id="rem-store">
+            </div>
+        </div>
+        <div class="m-win-footer block-invisible" id="main-footer">
+            <button class="btn btn-footer" id="cancel-check-mode">Отменить</button>
+            <button class="btn btn-footer" id="finished-reminder">Завершить</button>
+            <button class="btn btn-footer" id="delete-reminder">Удалить</button>
         </div>
     </div>
 

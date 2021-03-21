@@ -54,7 +54,7 @@ body {
 /**/
 }
 .btn-menu{
-    /*background-color:#161b22!important;*/
+       /*background-color:#161b22!important;*/
     /*color: rgba(240, 246, 252, 0.7);*/
     border: none;
     height: 35px!important;
@@ -102,6 +102,10 @@ body {
 }
 .block-invisible{
     display: none!important;
+}
+.checkbox-item:disabled{
+ border-color: initial;
+ background-color: initial;
 }
 
 

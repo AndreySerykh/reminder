@@ -1,7 +1,8 @@
+const keyStor = "reminderStorege";
 Storage.prototype.set = (value) => {
-  const key = "reminderStorege";
+  
   let data;
-  let item = localStorage.getItem(key);
+  let item = localStorage.getItem(keyStor);
   if (item) {
     let parseItem = JSON.parse(item);
     parseItem.push(value);
@@ -9,11 +10,15 @@ Storage.prototype.set = (value) => {
   } else {
     data = JSON.stringify([value]);
   }
-  localStorage.setItem(key, data);
+  localStorage.setItem(keyStor, data);
 };
 
 Storage.prototype.get = () => {
-  let items = localStorage.getItem("reminderStorege");
+  let items = localStorage.getItem(keyStor);
   if (items) return JSON.parse(items);
   else return false;
 };
+
+Storage.prototype.reSet = (data) => {
+  localStorage.setItem(keyStor, JSON.stringify(data));
+}

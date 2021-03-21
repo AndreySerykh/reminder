@@ -6,7 +6,7 @@ class Element {
   createInput(options) {
     this.$check = document.createElement("input");
     this.$check.setAttribute("type", "checkbox");
-    this.$check.setAttribute("readonly", "readonly");
+    //this.$check.setAttribute("disabled", "");
     this.$check.className = "checkbox-item block-invisible";
     this.$check.id = `checkbox-item-${options.id}`;
     return this.$check;
@@ -15,6 +15,7 @@ class Element {
   createText(options) {
     this.$text = document.createElement("span");
     this.$text.innerText = options.text;
+    this.$text.setAttribute("readonly", "");
     this.$text.data = options.id; //  Attr
     return this.$text;
   }
@@ -48,28 +49,18 @@ class ReminderItem extends Element {
   }
 
   eventSpy() {
-    //this.checkModeState = false;
-    //this.mousePressTime = 0;
-
     this.$item.addEventListener("mousedown", function (e) {
       if (e.which == 1) {
-        console.log("li left mouse down");
-        e.preventDefault();
-
         this.mousePressTime = 0;
         this.interval = window.setInterval(() => {
-          console.log("+500ms");
           this.mousePressTime += 500;
-
           if (this.mousePressTime >= 1000) {
             console.log("auto run long click!! CheckMode true");
             clearInterval(this.interval);
-            if (!ReminderItem.checkModeState){
+            if (!ReminderItem.checkModeState) {
               ReminderItem.checkModeState = true;
-              //this.displayAllCheckbox(true);
-              this.checkMode(true);
+              ReminderItem.checkMode(true);
             }
-            this.checkCheckbox(e.target);
           }
         }, 500);
       }
@@ -77,12 +68,9 @@ class ReminderItem extends Element {
 
     this.$item.addEventListener("mouseup", function (e) {
       if (e.which == 1) {
-        console.log("li left mouse up");
-        e.preventDefault();
-
         clearInterval(this.interval);
         if (this.mousePressTime < 1000) {
-          console.log(`this is fast click ${this.mousePressTime}`);
+          console.log(`this is fast click`);
           if (!ReminderItem.checkModeState) {
             modalWin.create({
               windowName: "view",
@@ -92,77 +80,29 @@ class ReminderItem extends Element {
               ),
             });
           }
-          else {
-            this.checkCheckbox(e.target);
-          }
-        }/* else {
-          console.log(`this is long click ${this.mousePressTime}`);
-          if (!this.checkModeState) {
-            this.displayAllCheckbox(true);
-            this.checkCheckbox(e.target);
-            this.checkMode();
-          }
-        }*/
+        }
         this.mousePressTime = 0;
       }
     }.bind(this));
-
-    document.querySelector('#item-check-all').addEventListener("click", function (e) {
-      e.currentTarget.checked
-        ? this.checkAllCheckbox(true)
-        : this.checkAllCheckbox(false)
-
-      this.countChecked()
-    }.bind(this))
-
-    document.querySelector('#cancel-check-mode').addEventListener("click", function (e) {
-      this.checkAllCheckbox(false)
-      this.checkMode(false)
-    }.bind(this))
-  
-///не помогло!
-    document.querySelectorAll(".checkbox-item").forEach((element) => {
-      element.addEventListener("click",  (e) => {
-        e.preventDefault();
-      })
-    })  
   }
-  displayAllCheckbox(show) {
-    let allCheckbox = document.querySelectorAll(".checkbox-item");
-    if (allCheckbox.length)
-      allCheckbox.forEach((element) => {
-        show
-          ? element.classList.remove("block-invisible")
-          : element.classList.add("block-invisible");
-      
-          //element.classList.toggle("block-invisible");
-      });
-  }
-  
+
   static checkModeState = false;
 
-  checkAllCheckbox(state) {
-    let allCheckbox = document.querySelectorAll(".checkbox-item");
-    if (allCheckbox.length)
-      allCheckbox.forEach((element) => {
-        state
-          ? element.setAttribute("checked", "checked")
-          : element.removeAttribute("checked")
-      });
-  }
+  static checkMode(state) {
+    const displayAllCheckbox = function (show) {
+      let allCheckbox = document.querySelectorAll(".checkbox-item");
+      if (allCheckbox.length)
+        allCheckbox.forEach((element) => {
+          show
+            ? element.classList.remove("block-invisible")
+            : element.classList.add("block-invisible");
+        });
+    };
 
-  checkCheckbox(item) {
-    ///Bug not fixset
-    if (item.childNodes.length)
-      item.querySelector("input").toggleAttribute("checked");
-
-    this.countChecked()
-  }
-
-  checkMode(state) {
-    this.displayAllCheckbox(state);
-    ReminderItem.checkModeState = state
+    displayAllCheckbox(state);
+    ReminderItem.checkModeState = state;
     document.querySelector("#main-footer").classList.toggle("block-invisible");
+    if (!state) document.querySelector("#item-check-all").checked = false;
 
     let qq = document.querySelector(".menu-content").childNodes;
     qq.forEach((element) => {
@@ -170,25 +110,95 @@ class ReminderItem extends Element {
         element.classList.toggle("block-invisible");
     });
   }
+}
 
-  countChecked(){
-    const count = document.querySelectorAll(".checkbox-item:checked").length
-    document.querySelector('#count-checked').innerText = count
-  }
+function reminderFactory(reminderList) {
+  const setEvent = function () {
+    document
+      .querySelector("#item-check-all")
+      .addEventListener("click", function (e) {
+        e.currentTarget.checked
+          ? checkAllCheckbox(true)
+          : checkAllCheckbox(false);
+      });
+
+    document
+      .querySelector("#cancel-check-mode")
+      .addEventListener("click", function (e) {
+        checkAllCheckbox(false);
+        ReminderItem.checkMode(false);
+      });
+
+    //const checkedCount = document.querySelector("#count-checked");
+    document.querySelectorAll(".checkbox-item").forEach((element) => {
+      element.addEventListener("click", (e) => {
+        countChecked();
+      });
+    });
+
+    document.querySelector("#delete-reminder")
+      .addEventListener("click", function (e) {
+        document.querySelectorAll(".checkbox-item:checked").forEach((element, i) => {
+          let del = confirm('Вы действительно хотите удалить напоминание?')
+          if (del){
+            reminderItems.splice(element.parentNode.data, 1)
+            element.parentNode.remove()
+            localStorage.reSet(reminderItems)
+            document.querySelector("#cancel-check-mode").click()
+          }
+        })        
+      })
+
+    document.querySelector("#finished-reminder")
+    .addEventListener("click", function (e) {
+      document.querySelectorAll(".checkbox-item:checked").forEach((element, i) => {
+          reminderItems[element.parentNode.data].onfinished = true
+          element.parentNode.remove()
+          localStorage.reSet(reminderItems)
+          document.querySelector("#cancel-check-mode").click()
+      })        
+    })
+
+  };
+
+  const checkAllCheckbox = function (state) {
+    const allCheckbox = document.querySelectorAll(".checkbox-item");
+    if (allCheckbox.length) {
+      allCheckbox.forEach((element) => {
+        element.checked = state;
+      });
+      countChecked();
+    }
+  };
+
+  const countChecked = function (set) {
+    const countChecked = document.querySelector("#count-checked");
+    let count;
+    if (set === undefined)
+      count = document.querySelectorAll(".checkbox-item:checked").length;
+    else count = set;
+
+    count !== 0
+      ? (countChecked.innerText = `Выбрано ${count}`)
+      : (countChecked.innerText = "");
+  };
+
+   reminderList.forEach((item, i) => {
+    if (!item.onfinished)
+      new ReminderItem({
+        reminderList: "#rem-store",
+        id: i,
+        text: item.name,
+      }).addFirst();
+  });
+
+  setEvent();
 }
 
 const modalWin = new ModalWin(); //initial modal window
 
 const reminderItems = localStorage.get(); // load old save reminder from local storage
-if (reminderItems) {
-  reminderItems.forEach((item, i) => {
-    new ReminderItem({
-      reminderList: "#rem-store",
-      id: i,
-      text: item.name,
-    }).addFirst();
-  });
-}
+if (reminderItems) reminderFactory(reminderItems);
 
 /*
  *   Общий обработчик событий к еще не созданным элементам
@@ -204,7 +214,7 @@ document.body.on = function (event, element, callback) {
 };
 
 /*
- * Add new reminder
+ * Events from Add new reminder
  */
 document.querySelector("#add-reminder").addEventListener("click", () => {
   console.log("click add-reminder");
@@ -347,13 +357,14 @@ function loadReminderList(type, options) {
  */
 function saveReminderItems() {
   console.log(`click in btn save inner`);
-  const reminder = {
+  let reminder = {
+    onfinished: false,
     name: document.querySelector("#reminder-name").value,
   };
   const itemsList = document.querySelectorAll(".add-reminder-item");
 
   if (itemsList.length) {
-    // проверям, не пуст ли объект, есть ли у него дети
+    // проверям не пуст ли объект
     //const allMasItem = Array.prototype.slice.call(items.childNodes);
     let items = [];
     for (let i = 0; i < itemsList.length; ++i) {

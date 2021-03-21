@@ -12,11 +12,11 @@
         <div class="menu-content">
             <div class="menu-content-left">Напоминания</div>
             <div class="menu-check-mode block-invisible">
-                <input type="checkbox" id="item-check-all"><a>&nbsp;Все&nbsp;</a>&nbsp;<a>Выбрано <span id="count-checked"></span> стр.</a>
+                <input type="checkbox" id="item-check-all"/><a>&nbsp;Все&nbsp;</a>&nbsp;<a><span id="count-checked"></span></a>
             </div>
             <div class="menu-content-right">
-                <button class="btn btn-menu" id="add-reminder" hint="ADD">+</button>
-                <button class="btn btn-menu" id="options-reminder" hint="ADD">&equiv;</button>
+                <button class="btn btn-menu" id="add-reminder" title="Добавить">+</button>
+                <button class="btn btn-menu" id="options-reminder" title="Завершено">&equiv;</button>
             </div>
         </div>
         <div class="content">
@@ -28,30 +28,7 @@
             <button class="btn btn-footer" id="finished-reminder">Завершить</button>
             <button class="btn btn-footer" id="delete-reminder">Удалить</button>
         </div>
-    </div>
-
-    <!--div class="m-win">
-        <div class="m-win-body">
-            <div class="m-win-container">
-                <input class="input input-text-header" id="reminder-name" type="text" placeholder="Название">
-                <div class="reminder-items">
-                    <div class="reminder-item" id="head-reminder-item">
-                        <img class="img-min" src="img/check.png">
-                        <span>Добавить список</span>
-                    </div>
-                    <div class="reminder-item" id="footer-reminder-item" style="display: none;">
-                        <img class="img-min" src="img/arrow_1.png">
-                        <span>Добавить элемент</span>
-                    </div>
-                </div>
-            </div>
-            <div class="m-win-footer" style="vertical-align: bottom;">
-                <button class="btn-footer btn" id="m-win-close" onclick="console.log('close ', this)">Отмена</button>
-                <button class="btn-footer btn" id="save-new-reminder">Сохранить</button>
-            </div>
-        </div>
-    </div-->
-    
+    </div> 
 </body>
 <script type="module"src="index.js"></script>
 </html>

@@ -46,7 +46,21 @@ body {
     /*background-color: #161b22;*/
     background-color: black;
 }
-
+.menu-check-mode{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+}
+.menu-check-all{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 12px;
+}
+.menu-check-mode span{
+    padding-left: 12px;
+}
 .menu-content-left {
     cursor: default;
 }

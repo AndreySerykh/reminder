@@ -7,6 +7,9 @@ export class ModalWin{
     this.windows[options.windowName] = new Window(options.body)
     this.windows[options.windowName].$mWin.insertAdjacentHTML("beforeend", this.windows[options.windowName].body);
     document.body.append(this.windows[options.windowName].$mWin);
+    // addEventListner
+    if (options.event !== undefined && typeof (options.event) === "function")
+      options.event.call(this)
   }
 
   close(windowName) {
@@ -20,6 +23,11 @@ export class ModalWin{
         this.windows[key].$mWin.remove();
         delete this.windows[key];
       }
+  }
+
+  addEvent(callback){
+    //callback.bind(this)()
+    callback.call(this)
   }
 }
 

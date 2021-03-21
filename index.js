@@ -1,117 +1,27 @@
 import { ModalWin } from "./modalWindow.js";
 import "./localStorage.js";
+import { ReminderItem } from "./reminderItem.js";
 
-//// нужно перенести в оьътдельный модуль/файл class Item, class ReminderItem
-class Element {
-  createInput(options) {
-    this.$check = document.createElement("input");
-    this.$check.setAttribute("type", "checkbox");
-    //this.$check.setAttribute("disabled", "");
-    this.$check.className = "checkbox-item block-invisible";
-    this.$check.id = `checkbox-item-${options.id}`;
-    return this.$check;
-  }
 
-  createText(options) {
-    this.$text = document.createElement("span");
-    this.$text.innerText = options.text;
-    this.$text.setAttribute("readonly", "");
-    this.$text.data = options.id; //  Attr
-    return this.$text;
-  }
+
+export const modalWin = new ModalWin(); //initial modal window
+export let reminderItems = loadReminder()
+
+
+function loadReminder(){
+  let remItems = localStorage.get();// load old save reminder from local storage
+  if (remItems) 
+    reminderFactory(remItems);
+
+  return remItems
 }
 
-class ReminderItem extends Element {
-  constructor(options) {
-    super();
-    this.$reminderList = document.querySelector(options.reminderList);
-
-    this.$item = document.createElement("div");
-    this.$item.className = "li-item";
-    this.$item.id = `li-item-${options.id}`;
-    this.$item.data = options.id; //  Attr
-    this.$item.insertAdjacentElement("beforeend", this.createInput(options));
-    this.$item.insertAdjacentElement("beforeend", this.createText(options));
-
-    this.eventSpy();
-  }
-
-  addLast() {
-    this.$reminderList.append(this.$item);
-  }
-
-  addFirst() {
-    this.$reminderList.prepend(this.$item);
-  }
-
-  remove() {
-    this.$item.remove();
-  }
-
-  eventSpy() {
-    this.$item.addEventListener("mousedown", function (e) {
-      if (e.which == 1) {
-        this.mousePressTime = 0;
-        this.interval = window.setInterval(() => {
-          this.mousePressTime += 500;
-          if (this.mousePressTime >= 1000) {
-            console.log("auto run long click!! CheckMode true");
-            clearInterval(this.interval);
-            if (!ReminderItem.checkModeState) {
-              ReminderItem.checkModeState = true;
-              ReminderItem.checkMode(true);
-            }
-          }
-        }, 500);
-      }
-    }.bind(this));
-
-    this.$item.addEventListener("mouseup", function (e) {
-      if (e.which == 1) {
-        clearInterval(this.interval);
-        if (this.mousePressTime < 1000) {
-          console.log(`this is fast click`);
-          if (!ReminderItem.checkModeState) {
-            modalWin.create({
-              windowName: "view",
-              body: createReminderWindowContent(
-                "view",
-                reminderItems[e.target.data]
-              ),
-            });
-          }
-        }
-        this.mousePressTime = 0;
-      }
-    }.bind(this));
-  }
-
-  static checkModeState = false;
-
-  static checkMode(state) {
-    const displayAllCheckbox = function (show) {
-      let allCheckbox = document.querySelectorAll(".checkbox-item");
-      if (allCheckbox.length)
-        allCheckbox.forEach((element) => {
-          show
-            ? element.classList.remove("block-invisible")
-            : element.classList.add("block-invisible");
-        });
-    };
-
-    displayAllCheckbox(state);
-    ReminderItem.checkModeState = state;
-    document.querySelector("#main-footer").classList.toggle("block-invisible");
-    if (!state) document.querySelector("#item-check-all").checked = false;
-
-    let qq = document.querySelector(".menu-content").childNodes;
-    qq.forEach((element) => {
-      if (element.nodeName !== "#text")
-        element.classList.toggle("block-invisible");
-    });
-  }
+function refreshReminderStory(){
+  document.querySelector("#rem-store").innerHTML = ''
 }
-
+/*
+* load seved reminder from local storage and add event lisner
+*/
 function reminderFactory(reminderList) {
   const setEvent = function () {
     document
@@ -129,7 +39,6 @@ function reminderFactory(reminderList) {
         ReminderItem.checkMode(false);
       });
 
-    //const checkedCount = document.querySelector("#count-checked");
     document.querySelectorAll(".checkbox-item").forEach((element) => {
       element.addEventListener("click", (e) => {
         countChecked();
@@ -150,15 +59,14 @@ function reminderFactory(reminderList) {
       })
 
     document.querySelector("#finished-reminder")
-    .addEventListener("click", function (e) {
-      document.querySelectorAll(".checkbox-item:checked").forEach((element, i) => {
+      .addEventListener("click", function (e) {
+        document.querySelectorAll(".checkbox-item:checked").forEach((element, i) => {
           reminderItems[element.parentNode.data].onfinished = true
           element.parentNode.remove()
           localStorage.reSet(reminderItems)
           document.querySelector("#cancel-check-mode").click()
-      })        
-    })
-
+        })        
+      })
   };
 
   const checkAllCheckbox = function (state) {
@@ -180,48 +88,34 @@ function reminderFactory(reminderList) {
 
     count !== 0
       ? (countChecked.innerText = `Выбрано ${count}`)
-      : (countChecked.innerText = "");
+      : (countChecked.innerText = "Выбор напоминаний");
   };
 
-   reminderList.forEach((item, i) => {
+  reminderList.forEach((item, i) => {
     if (!item.onfinished)
       new ReminderItem({
         reminderList: "#rem-store",
         id: i,
-        text: item.name,
+        text: item.name
       }).addFirst();
   });
 
   setEvent();
 }
 
-const modalWin = new ModalWin(); //initial modal window
 
-const reminderItems = localStorage.get(); // load old save reminder from local storage
-if (reminderItems) reminderFactory(reminderItems);
-
-/*
- *   Общий обработчик событий к еще не созданным элементам
- */
-document.body.on = function (event, element, callback) {
-  for (const _body of document.querySelectorAll("body")) {
-    _body.addEventListener(event, (e) => {
-      if (!e.target.matches(element)) return;
-      console.log(`Object.prototype.on -> ${element} -> ${event}`);
-      callback();
-    });
-  }
-};
 
 /*
  * Events from Add new reminder
  */
 document.querySelector("#add-reminder").addEventListener("click", () => {
   console.log("click add-reminder");
-  modalWin.create({
-    windowName: "add",
-    body: createReminderWindowContent("add"),
-  });
+  modalWin
+    .create({
+      windowName: "add",
+      body: createReminderWindowContent("add"),
+      event: eventFromAddMWin
+    })
 });
 
 function addReminerItem() {
@@ -235,39 +129,56 @@ function addReminerItem() {
     .insertAdjacentHTML("beforebegin", html);
 }
 
+
 /*
- * Добавляем обработчик событий к еще не созданным элементам
- */
+//
+//   Общий обработчик событий к еще не созданным элементам
+//
+document.body.on = function (event, element, callback) {
+  for (const _body of document.querySelectorAll("body")) {
+    _body.addEventListener(event, (e) => {
+      if (!e.target.matches(element)) return;
+      console.log(`Object.prototype.on -> ${element} -> ${event}`);
+      callback();
+    });
+  }
+};
+*/
 
-// общее закрытие модальных окон
-document.body.on("click", "#m-win-close", () => {
-  console.log("click btn close modal-win");
-  modalWin.closeAll();
-});
+function eventFromAddMWin() {
+ 
+  document.querySelector('#m-win-close').addEventListener('click', () => {
+    this.closeAll();
+    //this.close('add')
+    //console.log('this' + JSON.stringify(this));
+  })
+  
+  document.querySelector('#save-new-reminder').addEventListener('click', () => {
+    console.log(`click in btn save`);
+    saveReminderItems();
+    refreshReminderStory()
+    loadReminder()
+  });
 
-document.body.on("click", "#save-new-reminder", () => {
-  console.log(`click in btn save`);
-  saveReminderItems();
-});
+  document.querySelector('#head-reminder-item span').addEventListener('click', () => {
+    console.log(`head-reminder-item`);
+    document.querySelector("#footer-reminder-item").style.display = "block";
+    document.querySelector("#head-reminder-item").style.display = "none";
+    addReminerItem();
+    setFocusLastItem();
+  });
 
-document.body.on("click", "#head-reminder-item span", () => {
-  console.log(`head-reminder-item`);
-  document.querySelector("#footer-reminder-item").style.display = "block";
-  document.querySelector("#head-reminder-item").style.display = "none";
-  addReminerItem();
-  setFocusLastItem();
-});
-
-document.body.on("click", "#footer-reminder-item span", () => {
-  addReminerItem();
-  setFocusLastItem();
-});
+  document.querySelector('#footer-reminder-item span').addEventListener('click', () => {
+    addReminerItem();
+    setFocusLastItem();
+  });
+}
 //-----------
 
 /*
  *   create reminder window with type = "add" || "edit" || "view"
  */
-function createReminderWindowContent(type, options) {
+export function createReminderWindowContent(type, options) {
   let header = "",
     content = "",
     footer = "";
@@ -368,7 +279,6 @@ function saveReminderItems() {
     //const allMasItem = Array.prototype.slice.call(items.childNodes);
     let items = [];
     for (let i = 0; i < itemsList.length; ++i) {
-      // перебераем вссе кроме первого и поcледнего элемента
       let item = {
         checked: itemsList[i].querySelector(".checkbox-item").checked,
         value: itemsList[i].querySelector(".item-text-reminder").value,
@@ -380,6 +290,9 @@ function saveReminderItems() {
 
   localStorage.set(reminder); //save new reminder in local storage
   modalWin.close("add"); //close mWindow
+
+ 
+
 }
 
 function setFocusLastItem() {

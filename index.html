@@ -5,14 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reminder</title>
-    <link rel="stylesheet" type="text/css" href="/style-flex.css">
+    <link rel="stylesheet" type="text/css" href="/css/index.css">
+    <link rel="icon" type="image/png" href="/img/favicon.png">
 </head>
 <body>
     <div class="container main-container">
         <div class="menu-content">
             <div class="menu-content-left">Напоминания</div>
             <div class="menu-check-mode block-invisible">
-                <input type="checkbox" id="item-check-all"/><a>&nbsp;Все&nbsp;</a>&nbsp;<a><span id="count-checked"></span></a>
+                <div class="menu-check-all"><input type="checkbox" id="item-check-all"/><a>Все</a></div>
+                <span id="count-checked">Выбор напоминаний</span>
             </div>
             <div class="menu-content-right">
                 <button class="btn btn-menu" id="add-reminder" title="Добавить">+</button>

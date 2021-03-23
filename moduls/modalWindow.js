@@ -5,10 +5,12 @@ export class ModalWin{
 
   create(options){
     this.windows[options.windowName] = new Window(options.body)
+    if(typeof options.selectedReminderId !== 'undefined')
+    this.windows[options.windowName].selectedReminderId = options.selectedReminderId
     this.windows[options.windowName].$mWin.insertAdjacentHTML("beforeend", this.windows[options.windowName].body);
     document.body.append(this.windows[options.windowName].$mWin);
     // addEventListner
-    if (options.event !== undefined && typeof (options.event) === "function")
+    if (typeof options.event !== 'undefined' && typeof (options.event) === "function")
       options.event.call(this)
   }
 

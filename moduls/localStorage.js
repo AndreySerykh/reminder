@@ -1,11 +1,15 @@
 const keyStor = "reminderStorege";
-Storage.prototype.set = (value) => {
+Storage.prototype.set = (value, id) => {
   
   let data;
   let item = localStorage.getItem(keyStor);
   if (item) {
     let parseItem = JSON.parse(item);
-    parseItem.push(value);
+    if (typeof id !== "undefined")
+      parseItem[id] = value;
+    else 
+      parseItem.push(value);
+
     data = JSON.stringify(parseItem);
   } else {
     data = JSON.stringify([value]);

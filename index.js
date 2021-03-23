@@ -1,6 +1,6 @@
-import { ModalWin } from "./modalWindow.js";
-import "./localStorage.js";
-import { ReminderItem } from "./reminderItem.js";
+import { ModalWin } from "./moduls/modalWindow.js";
+import "./moduls/localStorage.js";
+import { ReminderItem } from "./moduls/reminderItem.js";
 
 
 
@@ -8,10 +8,10 @@ export const modalWin = new ModalWin(); //initial modal window
 export let reminderItems = loadReminder()
 
 
-function loadReminder(){
+function loadReminder(isFinished = false){
   let remItems = localStorage.get();// load old save reminder from local storage
   if (remItems) 
-    reminderFactory(remItems);
+    reminderFactory(remItems, isFinished);
 
   return remItems
 }
@@ -22,8 +22,19 @@ function refreshReminderStory(){
 /*
 * load seved reminder from local storage and add event lisner
 */
-function reminderFactory(reminderList) {
-  const setEvent = function () {
+function reminderFactory(reminderList, isFinished) {
+  reminderList.forEach((item, i) => {
+    if (item.onfinished === isFinished)
+      new ReminderItem({
+        reminderList: "#rem-store",
+        id: i,
+        text: item.name
+      }).addFirst();
+  });
+
+  setEventAfterRender();
+
+  function setEventAfterRender() {
     document
       .querySelector("#item-check-all")
       .addEventListener("click", function (e) {
@@ -47,8 +58,8 @@ function reminderFactory(reminderList) {
 
     document.querySelector("#delete-reminder")
       .addEventListener("click", function (e) {
+        let del = confirm('Вы действительно хотите удалить напоминание?')
         document.querySelectorAll(".checkbox-item:checked").forEach((element, i) => {
-          let del = confirm('Вы действительно хотите удалить напоминание?')
           if (del){
             reminderItems.splice(element.parentNode.data, 1)
             element.parentNode.remove()
@@ -69,7 +80,7 @@ function reminderFactory(reminderList) {
       })
   };
 
-  const checkAllCheckbox = function (state) {
+  function checkAllCheckbox(state) {
     const allCheckbox = document.querySelectorAll(".checkbox-item");
     if (allCheckbox.length) {
       allCheckbox.forEach((element) => {
@@ -79,7 +90,7 @@ function reminderFactory(reminderList) {
     }
   };
 
-  const countChecked = function (set) {
+  function countChecked(set) {
     const countChecked = document.querySelector("#count-checked");
     let count;
     if (set === undefined)
@@ -91,22 +102,13 @@ function reminderFactory(reminderList) {
       : (countChecked.innerText = "Выбор напоминаний");
   };
 
-  reminderList.forEach((item, i) => {
-    if (!item.onfinished)
-      new ReminderItem({
-        reminderList: "#rem-store",
-        id: i,
-        text: item.name
-      }).addFirst();
-  });
 
-  setEvent();
 }
 
 
 
 /*
- * Events from Add new reminder
+ * Events from main frame
  */
 document.querySelector("#add-reminder").addEventListener("click", () => {
   console.log("click add-reminder");
@@ -114,7 +116,7 @@ document.querySelector("#add-reminder").addEventListener("click", () => {
     .create({
       windowName: "add",
       body: createReminderWindowContent("add"),
-      event: eventFromAddMWin
+      event: eventModWinAdd
     })
 });
 
@@ -129,6 +131,23 @@ function addReminerItem() {
     .insertAdjacentHTML("beforebegin", html);
 }
 
+document.querySelector("#finished-reminder-all").addEventListener("click", (e) => {
+  console.log("finished-reminder-all");
+  let finished = e.target.getAttribute("data-finished");
+  if (finished === "false"){
+    finished = true;
+    e.target.setAttribute("data-finished", `${finished}`);
+    e.target.title = 'Отобразить активные напоминания'
+  }
+  else {
+    finished = false;
+    e.target.setAttribute("data-finished", `${finished}`);
+    e.target.title = 'Отобразить активные напоминания'
+  }
+  refreshReminderStory()
+  reminderItems = loadReminder(finished)
+
+});
 
 /*
 //
@@ -145,36 +164,6 @@ document.body.on = function (event, element, callback) {
 };
 */
 
-function eventFromAddMWin() {
- 
-  document.querySelector('#m-win-close').addEventListener('click', () => {
-    this.closeAll();
-    //this.close('add')
-    //console.log('this' + JSON.stringify(this));
-  })
-  
-  document.querySelector('#save-new-reminder').addEventListener('click', () => {
-    console.log(`click in btn save`);
-    saveReminderItems();
-    refreshReminderStory()
-    loadReminder()
-  });
-
-  document.querySelector('#head-reminder-item span').addEventListener('click', () => {
-    console.log(`head-reminder-item`);
-    document.querySelector("#footer-reminder-item").style.display = "block";
-    document.querySelector("#head-reminder-item").style.display = "none";
-    addReminerItem();
-    setFocusLastItem();
-  });
-
-  document.querySelector('#footer-reminder-item span').addEventListener('click', () => {
-    addReminerItem();
-    setFocusLastItem();
-  });
-}
-//-----------
-
 /*
  *   create reminder window with type = "add" || "edit" || "view"
  */
@@ -183,6 +172,11 @@ export function createReminderWindowContent(type, options) {
     content = "",
     footer = "";
   let name = options ? options.name : "";
+  let styleHeadReminderItem = '', styleFooterReminderItem = 'display: none;'
+  if (type === 'edit'){
+    styleHeadReminderItem = 'display: none;'
+    styleFooterReminderItem = ''
+  }
   let reminderList = options ? loadReminderList(type, options) : "";
   if (type === "add" || type === "edit") {
     header = `
@@ -192,12 +186,12 @@ export function createReminderWindowContent(type, options) {
             <div class="m-win-content">
                 <input class="input input-text-header" id="reminder-name" value="${name}" type="text" placeholder="Введите название">
                 <div class="reminder-items">
-                    <div class="reminder-item" id="head-reminder-item">
+                    <div class="reminder-item" id="head-reminder-item" style="${styleHeadReminderItem}">
                         <img class="img-min" src="img/check.png">
                         <span>Добавить список</span>
                     </div>
                     ${reminderList}
-                    <div class="reminder-item" id="footer-reminder-item" style="display: none;">
+                    <div class="reminder-item" id="footer-reminder-item" style="${styleFooterReminderItem}">
                         <img class="img-min" src="img/arrow_1.png">
                         <span>Добавить элемент</span>
                     </div>
@@ -211,7 +205,7 @@ export function createReminderWindowContent(type, options) {
   } else {
     header = `
             <div class="m-win-header">
-                <button class="btn btn-header" id="m-win-close"><</button>
+                <button class="btn btn-header" id="view-m-win-close"><</button>
             </div>`;
     content = `<div class="m-win-content">
                     <input class="input input-text-header input-view" id="reminder-name" value="${name}" type="text" readonly >
@@ -220,9 +214,9 @@ export function createReminderWindowContent(type, options) {
                     </div>
                 </div>`;
     footer = `<div class="m-win-footer">
-                    <button class="btn btn-footer" id="finished-reminder">Завершить</button>
-                    <button class="btn btn-footer" id="edit-reminder">Изменить</button>
-                    <button class="btn btn-footer" id="delete-reminder">Удалить</button>
+                    <button class="btn btn-footer" id="view-finished-reminder">Завершить</button>
+                    <button class="btn btn-footer" id="view-edit-reminder">Изменить</button>
+                    <button class="btn btn-footer" id="view-delete-reminder">Удалить</button>
                 </div>`;
   }
 
@@ -262,41 +256,120 @@ function loadReminderList(type, options) {
 
   return html;
 }
+// 
+//
+
 
 /*
- * save remindser in local storage
+ * Events from modal window 'Add'
  */
-function saveReminderItems() {
-  console.log(`click in btn save inner`);
-  let reminder = {
-    onfinished: false,
-    name: document.querySelector("#reminder-name").value,
-  };
-  const itemsList = document.querySelectorAll(".add-reminder-item");
+function eventModWinAdd() {
+  document.querySelector('#m-win-close').addEventListener('click', () => {
+    this.closeAll();
+    //this.close('add')
+  })
+  
+  document.querySelector('#save-new-reminder').addEventListener('click', () => {
+    console.log(`click in btn save`);
+    saveReminderItems();
+    refreshReminderStory()
+    reminderItems = loadReminder()
+  });
 
-  if (itemsList.length) {
-    // проверям не пуст ли объект
-    //const allMasItem = Array.prototype.slice.call(items.childNodes);
-    let items = [];
-    for (let i = 0; i < itemsList.length; ++i) {
-      let item = {
-        checked: itemsList[i].querySelector(".checkbox-item").checked,
-        value: itemsList[i].querySelector(".item-text-reminder").value,
-      };
-      items.push(item);
-    }
-    reminder.items = items;
+  document.querySelector('#head-reminder-item span').addEventListener('click', () => {
+    console.log(`head-reminder-item`);
+    document.querySelector("#footer-reminder-item").style.display = "block";
+    document.querySelector("#head-reminder-item").style.display = "none";
+    addReminerItem();
+    setFocusLastItem();
+  });
+
+  document.querySelector('#footer-reminder-item span').addEventListener('click', () => {
+    addReminerItem();
+    setFocusLastItem();
+  });
+
+
+/*
+* save remindser in local storage
+*/
+  let selectedReminderId = undefined;
+  if(typeof this.windows['edit'] !== 'undefined')
+  selectedReminderId = this.windows['edit'].selectedReminderId;
+
+  function saveReminderItems() {
+    console.log(`click in btn save inner`);
+    let reminder = {
+      onfinished: false,
+      name: document.querySelector("#reminder-name").value,
+    };
+    const itemsList = document.querySelectorAll(".add-reminder-item");
+
+    if (itemsList.length) {
+      // проверям не пуст ли объект
+      //const allMasItem = Array.prototype.slice.call(items.childNodes);
+      let items = [];
+      for (let i = 0; i < itemsList.length; ++i) {
+        let item = {
+          checked: itemsList[i].querySelector(".checkbox-item").checked,
+          value: itemsList[i].querySelector(".item-text-reminder").value,
+        };
+        items.push(item);
+      }
+      reminder.items = items;
+    } else
+      reminder.items = []
+
+    localStorage.set(reminder, selectedReminderId); //save new reminder in local storage
+    modalWin.closeAll(); //close mWindow
   }
 
-  localStorage.set(reminder); //save new reminder in local storage
-  modalWin.close("add"); //close mWindow
-
- 
-
+  function setFocusLastItem() {
+    const nodeList = document.querySelectorAll(".item-text-reminder");
+    nodeList[nodeList.length - 1].select();
+  }
 }
+//
+//
 
-function setFocusLastItem() {
-  const nodeList = document.querySelectorAll(".item-text-reminder");
-  nodeList[nodeList.length - 1].select();
+/*
+ * Events from modal window 'Edit'
+ */
+export function eventModWinView() {
+  const id = this.windows['view'].selectedReminderId
+
+  document.querySelector('#view-m-win-close').addEventListener('click', () => {
+    //this.closeAll();
+    this.close('view')
+  })
+  
+  document.querySelector('#view-finished-reminder').addEventListener('click', () => {
+    reminderItems[id].onfinished = true
+    localStorage.reSet(reminderItems)
+    this.close('view')
+    refreshReminderStory()
+    reminderItems = loadReminder()
+  })
+
+  document.querySelector('#view-edit-reminder').addEventListener('click', () => {
+
+    this.close('view')
+    modalWin.create({
+      windowName: "edit",
+      body: createReminderWindowContent("edit", reminderItems[id]),
+      selectedReminderId: id,
+      event: eventModWinAdd,
+    });
+  })
+
+  document.querySelector("#view-delete-reminder").addEventListener("click", (e)  => {
+    let del = confirm('Вы действительно хотите удалить напоминание?')
+    if (del){
+      reminderItems.splice(id, 1)
+      localStorage.reSet(reminderItems)
+      this.close('view')
+      refreshReminderStory()
+      reminderItems = loadReminder()
+    }        
+  })
 }
-//----------------------------------------------
